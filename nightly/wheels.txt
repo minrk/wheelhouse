@@ -1,0 +1,7 @@
+git+https://github.com/ipython/ipython#egg=ipython[all]
+git+https://github.com/cython/cython#egg=Cython
+git+https://github.com/zeromq/pyzmq#egg=pyzmq
+git+https://github.com/numpy/numpy#egg=numpy
+git+https://github.com/matplotlib/matplotlib#egg=matplotlib
+git+https://github.com/pydata/pandas#egg=pandas
+git+https://github.com/scipy/scipy#egg=scipy

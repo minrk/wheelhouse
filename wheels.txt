@@ -1,0 +1,13 @@
+readline
+pyzmq
+ipython[all]
+numpy
+cython
+pandas
+matplotlib
+scipy
+pymc
+scikit-learn
+scikit-image
+patsy
+statsmodels
