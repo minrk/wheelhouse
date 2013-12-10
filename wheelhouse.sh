@@ -6,7 +6,10 @@ if [[ "$@" = "nightly" ]]; then
   nightly="nightly"
 fi
 
-wheelhouse="$HOME/dev/wheelhouse/$nightly"
+# default to script location, change for somewhere else
+root=$(dirname "$0")
+
+wheelhouse="$root/$nightly"
 wheels=`cat $wheelhouse/wheels.txt`
 cache=/tmp/wheel-cache$nightly
 test -d "$cache" || mkdir "$cache"
