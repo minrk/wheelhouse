@@ -14,9 +14,19 @@ or
 
 for nightlies.
 
+Or you can make these the default, by adding to `~/.pip/pip.conf`:
+
+    [global]
+    find-links =
+        http://kerbin.bic.berkeley.edu/wheelhouse
+        http://kerbin.bic.berkeley.edu/wheelhouse/nightly
+    use-wheel = True
+
+
 # LaunchAgent
 
 Edit `net.minrk.wheelhouse.plist` with the path to wheelhouse.sh,
 and copy it to ~/Library/LaunchAgents in order to automatically build your own wheels
 on a schedule. On Linux, you can set it up with a cron job.
+
 
