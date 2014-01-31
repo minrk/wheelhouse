@@ -14,21 +14,44 @@ wheels=`cat $wheelhouse/wheels.txt`
 cache=/tmp/wheel-cache$nightly
 test -d "$cache" || mkdir "$cache"
 
-envs="wheels27$nightly wheels33$nightly"
+envroot="$HOME/env"
+
+if [[ -z "$VIRTUAL_ENV" ]]; then
+  envs="$envroot/wheels27$nightly $envroot/wheels33$nightly $envroot/wheels34$nightly"
+else
+  envs="$VIRTUAL_ENV"
+fi
 # some things (matplotlib OS X backend) don't like to compile with gcc-4.2 on 10.9.
 # using clang seeems to work, though
 export CC=clang
+# this one seems to be needed only for matplotlib 1.3 on Python.org Python 2.7
+export CFLAGS="-I/usr/local/opt/freetype/include/freetype2"
+
 for env in $envs; do
-  source $HOME/env/$env/bin/activate
+  source $env/bin/activate
   py=`python -c "import sys; print('%i%i' % sys.version_info[:2])"`
   test -d "$VIRTUAL_ENV/build" && rm -rf "$VIRTUAL_ENV/build"
+  easy_install --upgrade setuptools pip
   pip install --upgrade wheel
+  
+  # base command-line args
   test -z "$nightly" || pre='--pre'
+  args="$pre --use-wheel --allow-all-external --find-links $wheelhouse --download-cache $cache"
+  
+  # clear the cache dir before starting
+  for whl in "$cache"/*.whl; do
+    test "$whl" = "$cache"/*.whl && break
+    rm -i "$whl"
+  done
+  
+  # start building wheels
   for wheel in $wheels; do
+    wargs="$args --allow-insecure $wheel"
+    set +e
     set -x
-    pip wheel $pre --use-wheel --find-links "$wheelhouse" --wheel-dir "$wheelhouse" --download-cache "$cache" $wheel
-    pip install $pre --use-wheel --find-links "$wheelhouse" --download-cache "$cache" $wheel
+    pip wheel $wargs --wheel-dir "$wheelhouse" $wheel && pip install $wargs $wheel
     set +x
+    set -e
   
     # cache trick from https://github.com/pypa/pip/issues/1310#issuecomment-29760070
     for whl in "$cache"/*.whl; do
