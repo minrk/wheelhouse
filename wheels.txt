@@ -1,4 +1,5 @@
 readline
+gnureadline
 pyzmq
 ipython[all]
 numpy
@@ -11,3 +12,4 @@ scikit-learn
 scikit-image
 patsy
 statsmodels
+rpy2
