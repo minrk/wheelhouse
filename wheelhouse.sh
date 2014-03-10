@@ -7,9 +7,12 @@ if [[ "$@" = "nightly" ]]; then
 fi
 
 # default to script location, change for somewhere else
-root=$(dirname "$0")
+root=$(dirname "$0" | sed s@/\$@@)
 
-wheelhouse="$root/$nightly"
+if [[ ! -z "$nightly" ]]; then
+  wheelhouse="$root/$nightly"
+fi
+
 wheels=`cat $wheelhouse/wheels.txt`
 cache=/tmp/wheel-cache$nightly
 test -d "$cache" || mkdir "$cache"
@@ -72,3 +75,7 @@ for env in $envs; do
   done
 done
 
+# tell pip that all of the 10.6 wheels will also work on 10.9 (System Python)
+for file in $(find "$wheelhouse" -name '*-macosx_10_6_intel.whl'); do
+  mv $file $(echo $file | sed s/macosx_10_6_intel.whl/macosx_10_6_intel.macosx_10_9_intel.whl/)
+done
