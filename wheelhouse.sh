@@ -39,7 +39,7 @@ fi
 # using clang seeems to work, though
 export CC=cc
 export CXX=c++
-# this one seems to be needed only for matplotlib 1.3 on Python.org Python 2.7
+# this one seems to be needed only for matplotlib 1.3 for freetype and libpng
 export CFLAGS="-I/usr/local/opt/freetype/include/freetype2"
 
 for env in $envs; do
@@ -75,21 +75,19 @@ for env in $envs; do
       mv $whl "$root/${whl##*%2F}"
     done
   
-    if [[ ! -z "$nightly" ]]; then
-      # cleanup old wheels (pandas, numpy, etc. put sha in version)
-      egg=`echo $wheel | cut -f 2 -d =`
-      matches=`find $wheelhouse -depth 1 -name "$egg*cp$py*.whl" -exec stat -f '%m %N' {} \; | sort -n | cut -d ' ' -f 2`
-      old=`python -c "import sys; print(' '.join(sys.argv[1:-1]))" $matches`
-      set -x
-      test -z $old || rm -v $old
-      set +x
-    fi
+    # cleanup old wheels (pandas, numpy, etc. put sha in version)
+    egg=`echo $wheel | cut -f 2 -d =`
+    matches=`find $wheelhouse -depth 1 -name "$egg*cp$py*.whl" -exec stat -f '%m %N' {} \; | sort -n | cut -d ' ' -f 2`
+    old=`python -c "import sys; print(' '.join(sys.argv[1:-1]))" $matches`
+    set -x
+    test -z $old || rm -v $old
+    set +x
   done
 done
 
-# tell pip that all of the 10.6 wheels will also work on 10.9 (System Python)
+# tell pip that all of the 10.6 wheels will also work on 10.9 (System Python and Homebrew / user-compiled)
 for file in $(find "$wheelhouse" -name '*-macosx_10_6_intel.whl'); do
-  mv $file $(echo $file | sed s/macosx_10_6_intel.whl/macosx_10_6_intel.macosx_10_9_intel.whl/)
+  mv -v $file $(echo $file | sed s/macosx_10_6_intel.whl/macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.whl/)
 done
 
 if [[ ! -z "$upload_dest" ]]; then
