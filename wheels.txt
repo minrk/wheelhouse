@@ -1,4 +1,3 @@
-readline
 gnureadline
 pyzmq
 ipython[all]
@@ -14,3 +13,8 @@ patsy
 statsmodels
 rpy2
 sympy
+bokeh
+mpld3
+seaborn
+ggplot
+vincent
