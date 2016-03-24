@@ -13,6 +13,8 @@ if [[ ! -z "$1" ]]; then
   shift
 fi
 
+start="$(date)"
+
 upload="rsync -varuP --delete"
 
 # default to script location, change for somewhere else
@@ -86,8 +88,13 @@ for env in $envs; do
 done
 
 # tell pip that all of the 10.6 wheels will also work on 10.9 (System Python and Homebrew / user-compiled)
-for file in $(find "$wheelhouse" -name '*-macosx_10_6_intel.whl'); do
-  mv -v $file $(echo $file | sed s/macosx_10_6_intel.whl/macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.whl/)
+for whl in $(find "$wheelhouse" -name '*-macosx_10_6_intel.whl'); do
+  mv -v $whl $(echo $whl | sed s/macosx_10_6_intel.whl/macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.whl/)
+done
+
+# delocate new binary wheels
+for whl in $(find "$wheelhouse" -name '*-macosx*.whl' -depth 1 -newermt "$start"); do
+  delocate-wheel -v $whl
 done
 
 if [[ ! -z "$upload_dest" ]]; then
